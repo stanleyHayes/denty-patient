@@ -6,8 +6,10 @@ import ArticleItem from "../article/ArticleItem";
 import {Container} from "react-bootstrap";
 import axios from "axios";
 import Record from "../record/Record";
-
+import {useHistory} from "react-router-dom";
 function HomePage(props) {
+
+    const history = useHistory();
 
     const [articles, setArticles] = useState([]);
     const [assignedAppointments, setAssignedAppointments] = useState([]);
@@ -19,7 +21,7 @@ function HomePage(props) {
 
     useEffect(function () {
         axios({
-            url: `http://localhost:5000/api/v1/articles?author=${userID}`,
+            url: `http://localhost:5000/api/v1/articles?`,
             method: "get",
             headers: {Authorization: `Bearer ${token}`}
         }).then(function (response) {
@@ -27,36 +29,38 @@ function HomePage(props) {
         }).catch(function (error) {
             console.log(error);
         });
-    }, [articles]);
+    }, [articles, token, userID]);
 
 
     useEffect(function () {
         axios({
-            url: "http://localhost:5000/api/v1/appointments?status=vacant",
+            url: `http://localhost:5000/api/v1/appointments?status=vacant&patient=${userID}`,
             method: "get",
             headers: {Authorization: `Bearer ${token}`}
         }).then(function (response) {
             setUnassignedAppointments(response.data.appointments);
+            console.log(unassignedAppointments);
         }).catch(function (error) {
             console.log(error);
         });
-    }, [unassignedAppointments]);
+    }, [token, unassignedAppointments, userID]);
 
     useEffect(function () {
         axios({
-            url: `http://localhost:5000/api/v1/appointments?status=vacant&dentist=${userID}`,
+            url: `http://localhost:5000/api/v1/appointments?status=vacant&patient=${userID}`,
             method: "get",
             headers: {Authorization: `Bearer ${token}`}
         }).then(function (response) {
             setAssignedAppointments(response.data.appointments);
+            console.log(assignedAppointments);
         }).catch(function (error) {
             console.log(error);
         });
-    }, [assignedAppointments]);
+    }, [assignedAppointments, token, userID]);
 
     useEffect(function () {
         axios({
-            url: `http://localhost:5000/api/v1/records?dentist=${userID}`,
+            url: `http://localhost:5000/api/v1/records?patient=${userID}`,
             method: "get",
             headers: {Authorization: `Bearer ${token}`}
         }).then(function (response) {
@@ -64,168 +68,175 @@ function HomePage(props) {
         }).catch(function (error) {
             console.log(error);
         });
-    }, [records]);
+    }, [records, token, userID]);
 
     return (
         <Layout>
-            <div style={{backgroundColor: "#ddd"}}>
-                <Container>
-                    <Row className="py-5">
-                        <Col xs={24}>
-                            <h3 className="text-center">Summary</h3>
-                        </Col>
-                        <Col xs={20} sm={20} md={10} lg={10} xsOffset={2} smOffset={2} mdOffset={1} lgOffset={1}
-                             className="my-2">
-                            <Panel bordered={true} shaded={false} className="shadow-sm"
-                                   style={{backgroundColor: "white"}}>
-                                <h1 className="text-center text-info">{assignedAppointments.length}</h1>
-                                <h5 className="text-center text-dark ">Appointments</h5>
-                            </Panel>
-                        </Col>
+            {
+                (!userID) ? (
+                    history.push("/login")
+                ) : (
 
-                        <Col xs={20} sm={20} md={10} lg={10} xsOffset={2} smOffset={2} mdOffset={1} lgOffset={1}
-                             className="my-2">
-                            <Panel bordered={true} shaded={false} className="shadow-sm"
-                                   style={{backgroundColor: "white"}}>
-                                <h1 className="text-center text-info">{unassignedAppointments.length}</h1>
-                                <h5 className="text-center text-dark">Unassigned Appointments</h5>
-                            </Panel>
-                        </Col>
+                    <div style={{backgroundColor: "#ddd"}}>
+                        <Container>
+                            <Row className="py-5">
+                                <Col xs={24}>
+                                    <h3 className="text-center">Summary</h3>
+                                </Col>
+                                <Col xs={20} sm={20} md={10} lg={10} xsOffset={2} smOffset={2} mdOffset={1} lgOffset={1}
+                                     className="my-2">
+                                    <Panel bordered={true} shaded={false} className="shadow-sm"
+                                           style={{backgroundColor: "white"}}>
+                                        <h1 className="text-center text-info">{assignedAppointments.length}</h1>
+                                        <h5 className="text-center text-dark ">Appointments</h5>
+                                    </Panel>
+                                </Col>
 
-                        <Col xs={20} sm={20} md={10} lg={10} xsOffset={2} smOffset={2} mdOffset={1} lgOffset={1}
-                             className="my-2">
-                            <Panel bordered={true} shaded={false} className="shadow-sm"
-                                   style={{backgroundColor: "white"}}>
-                                <h1 className="text-center text-info">{articles.length}</h1>
-                                <h5 className="text-center text-dark">Articles</h5>
-                            </Panel>
-                        </Col>
+                                <Col xs={20} sm={20} md={10} lg={10} xsOffset={2} smOffset={2} mdOffset={1} lgOffset={1}
+                                     className="my-2">
+                                    <Panel bordered={true} shaded={false} className="shadow-sm"
+                                           style={{backgroundColor: "white"}}>
+                                        <h1 className="text-center text-info">{unassignedAppointments.length}</h1>
+                                        <h5 className="text-center text-dark">Unassigned Appointments</h5>
+                                    </Panel>
+                                </Col>
 
-                        <Col xs={20} sm={20} md={10} lg={10} xsOffset={2} smOffset={2} mdOffset={1} lgOffset={1}
-                             className="my-2">
-                            <Panel bordered={true} shaded={false} className="shadow-sm"
-                                   style={{backgroundColor: "white"}}>
-                                <h1 className="text-center text-info">{records.length}</h1>
-                                <h5 className="text-center text-dark">Records</h5>
-                            </Panel>
-                        </Col>
-                    </Row>
+                                <Col xs={20} sm={20} md={10} lg={10} xsOffset={2} smOffset={2} mdOffset={1} lgOffset={1}
+                                     className="my-2">
+                                    <Panel bordered={true} shaded={false} className="shadow-sm"
+                                           style={{backgroundColor: "white"}}>
+                                        <h1 className="text-center text-info">{articles.length}</h1>
+                                        <h5 className="text-center text-dark">Articles</h5>
+                                    </Panel>
+                                </Col>
 
-                    <Divider>Unassigned Appointments</Divider>
+                                <Col xs={20} sm={20} md={10} lg={10} xsOffset={2} smOffset={2} mdOffset={1} lgOffset={1}
+                                     className="my-2">
+                                    <Panel bordered={true} shaded={false} className="shadow-sm"
+                                           style={{backgroundColor: "white"}}>
+                                        <h1 className="text-center text-info">{records.length}</h1>
+                                        <h5 className="text-center text-dark">Records</h5>
+                                    </Panel>
+                                </Col>
+                            </Row>
 
-                    <Row className="my-2">
-                        {
-                            (unassignedAppointments.length <= 0) ? (
-                                    <Col style={{
-                                        minHeight: "85vh",
-                                        backgroundColor: "whitesmoke",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        justify: "center"
-                                    }}>
-                                        <h5 style={{color: "#999"}}>No Vacant Appointments</h5>
-                                    </Col>
-                                ) :
-                                (
-                                    unassignedAppointments.map(function (appointment, index) {
-                                        return (
-                                            <Col className="my-2" xs={24} md={12} lg={8} key={index}>
-                                                <AppointmentItem appointment={appointment}/>
+                            <Divider>Unassigned Appointments</Divider>
+
+                            <Row className="my-2">
+                                {
+                                    (unassignedAppointments.length <= 0) ? (
+                                            <Col style={{
+                                                minHeight: "85vh",
+                                                backgroundColor: "whitesmoke",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                justify: "center"
+                                            }}>
+                                                <h5 style={{color: "#999"}}>No Vacant Appointments</h5>
                                             </Col>
+                                        ) :
+                                        (
+                                            unassignedAppointments.map(function (appointment, index) {
+                                                return (
+                                                    <Col className="my-2" xs={24} md={12} lg={8} key={index}>
+                                                        <AppointmentItem appointment={appointment}/>
+                                                    </Col>
+                                                )
+                                            })
                                         )
-                                    })
-                                )
-                        }
-                    </Row>
+                                }
+                            </Row>
 
 
-                    <Divider>Articles</Divider>
+                            <Divider>Articles</Divider>
 
-                    <Row className="my-2">
-                        {
-                            (articles.length <= 0) ? (
-                                    <Col style={{
-                                        minHeight: "85vh",
-                                        backgroundColor: "whitesmoke",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        justify: "center"
-                                    }}>
-                                        <h5 style={{color: "#999"}}>No Authored Articles</h5>
-                                    </Col>
-                                ) :
-                                (
-                                    articles.map(function (article, index) {
-                                        return (
-                                            <Col className="my-2" xs={24} md={12} lg={8} key={index}>
-                                                <ArticleItem article={article}/>
+                            <Row className="my-2">
+                                {
+                                    (articles.length <= 0) ? (
+                                            <Col style={{
+                                                minHeight: "85vh",
+                                                backgroundColor: "whitesmoke",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                justify: "center"
+                                            }}>
+                                                <h5 style={{color: "#999"}}>No Authored Articles</h5>
                                             </Col>
+                                        ) :
+                                        (
+                                            articles.map(function (article, index) {
+                                                return (
+                                                    <Col className="my-2" xs={24} md={12} lg={8} key={index}>
+                                                        <ArticleItem article={article}/>
+                                                    </Col>
+                                                )
+                                            })
                                         )
-                                    })
-                                )
-                        }
-                    </Row>
+                                }
+                            </Row>
 
-                    <Divider>Appointments</Divider>
+                            <Divider>Appointments</Divider>
 
-                    <Row className="my-2">
-                        {
-                            (assignedAppointments.length <= 0) ? (
-                                    <Col style={{
-                                        minHeight: "85vh",
-                                        backgroundColor: "whitesmoke",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        justify: "center"
-                                    }}>
-                                        <h5 style={{color: "#999"}}>No Assigned Appointments</h5>
-                                    </Col>
-                                ) :
-                                (
-                                    assignedAppointments.map(function (appointment, index) {
-                                        return (
-                                            <Col className="my-2" xs={24} md={12} lg={8} key={index}>
-                                                <AppointmentItem appointment={appointment}/>
+                            <Row className="my-2">
+                                {
+                                    (assignedAppointments.length <= 0) ? (
+                                            <Col style={{
+                                                minHeight: "85vh",
+                                                backgroundColor: "whitesmoke",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                justify: "center"
+                                            }}>
+                                                <h5 style={{color: "#999"}}>No Assigned Appointments</h5>
                                             </Col>
+                                        ) :
+                                        (
+                                            assignedAppointments.map(function (appointment, index) {
+                                                return (
+                                                    <Col className="my-2" xs={24} md={12} lg={8} key={index}>
+                                                        <AppointmentItem appointment={appointment}/>
+                                                    </Col>
+                                                )
+                                            })
                                         )
-                                    })
-                                )
-                        }
-                    </Row>
+                                }
+                            </Row>
 
-                    <Divider>Records</Divider>
+                            <Divider>Records</Divider>
 
-                    <Row className="my-2">
-                        {
-                            (records.length <= 0) ? (
-                                    <Col style={{
-                                        minHeight: "85vh",
-                                        backgroundColor: "whitesmoke",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        justify: "center"
-                                    }}>
-                                        <h5 style={{color: "#999"}}>No Records</h5>
-                                    </Col>
-                                ) :
-                                (
-                                    records.map(function (record, index) {
-                                        return (
-                                            <Col className="my-2" xs={24} md={12} lg={8} key={index}>
-                                                <Record record={record}/>
+                            <Row className="my-2">
+                                {
+                                    (records.length <= 0) ? (
+                                            <Col style={{
+                                                minHeight: "85vh",
+                                                backgroundColor: "whitesmoke",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                justify: "center"
+                                            }}>
+                                                <h5 style={{color: "#999"}}>No Records</h5>
                                             </Col>
+                                        ) :
+                                        (
+                                            records.map(function (record, index) {
+                                                return (
+                                                    <Col className="my-2" xs={24} md={12} lg={8} key={index}>
+                                                        <Record record={record}/>
+                                                    </Col>
+                                                )
+                                            })
                                         )
-                                    })
-                                )
-                        }
-                    </Row>
+                                }
+                            </Row>
 
-                </Container>
-            </div>
+                        </Container>
+                    </div>
+                )
+            }
         </Layout>
     )
 }

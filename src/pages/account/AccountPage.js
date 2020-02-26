@@ -1,8 +1,10 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Layout from "../../components/layout/Layout";
-import {Button, Col, Container, Divider, List, Notification, Panel, Row} from "rsuite";
+import {Container} from "react-bootstrap";
 import {Link, useHistory} from "react-router-dom";
+
 import axios from "axios";
+import {Divider, List, Panel, Button} from "rsuite";
 
 function AccountPage(props) {
 
@@ -10,91 +12,124 @@ function AccountPage(props) {
 
     const [userID, setUserID] = useState(localStorage.getItem("user_id") || null);
     const [token, setToken] = useState(localStorage.getItem("token") || null);
+    const [user, setUser] = useState({});
 
-    function showNotification(message, status) {
-        if (status === "error") {
-            Notification.error({
-                title: "Failure",
-                description: message
-            });
-        } else {
-            Notification.success({
-                title: "Success",
-                description: message
-            });
-        }
-    }
-
-    function handleLogout(event) {
-        event.preventDefault();
+    useEffect(function () {
         axios({
-            method: "post",
-            url: "http://localhost:5000/api/v1/users/logout",
+            method: "get",
+            url: `http://localhost:5000/api/v1/users/${userID}`,
             headers: {Authorization: `Bearer ${token}`}
         }).then(function (response) {
+            setUser(response.data.user);
+        }).catch(function (error) {
+            console.log(error);
+        });
+    });
+
+    function handleLogout(event) {
+        axios({
+            method: "post",
+            url: `http://localhost:5050/api/v1/users/${userID}/logout`,
+            headers: {Authorization: `Bearer ${token}`}
+        }).then(function (response) {
+            setUser(response.data.user);
             localStorage.clear();
             history.push("/login");
         }).catch(function (error) {
-            showNotification(error.message, "error");
-        })
+            console.log(error);
+        });
     }
 
-    function handleDeactivate(event) {
-
-    }
 
     return (
         <Layout>
-            <Container>
-                <Row style={{
-                    display: "flex",
-                    minHeight: "93vh",
-                    width: "100vw",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    backgroundColor: "whitesmoke"
-                }}>
-                    <Col smOffset={2} xs={20} sm={20} xsOffset={2} mdOffset={2} md={20} lgOffset={6} lg={12}>
-                        <Panel style={{backgroundColor: "white", borderRadius: "24px"}} className="shadow-sm">
-                            <div className="mb-4">
-                                <h1 className="text-center">Denty Dentist</h1>
-                                <h5 className="text-center">Account Information</h5>
-                            </div>
-                            <List bordered={true} hover={true} size="lg">
-                                <List.Item>
-                                    <Link to="/edit-profile">
-                                        Edit Profile
-                                    </Link>
-                                </List.Item>
+            {
+                (!userID) ? (
+                    history.push("/login")
+                ) : (
+                    <div style={{backgroundColor: "whitesmoke"}}>
+                        <Container>
+                            {
+                                (user) ? (
+                                    <div className="py-4">
+                                        <Panel
+                                            bordered={true}
+                                            className="py-2 p-xs-2 p-sm-2 p-lg-5 shadow-sm"
+                                            style={{
+                                                backgroundColor: "white", borderRadius: "24px"
+                                            }}>
+                                            <List bordered={true} hover={true} size="md">
+                                                <List.Item>
+                                                    <small>Name</small>
+                                                    <h6>{user.name}</h6>
+                                                </List.Item>
 
-                                <List.Item>
-                                    <Link to="/change-password">
-                                        Change Password
-                                    </Link>
-                                </List.Item>
+                                                <List.Item>
+                                                    <small>Email</small>
+                                                    <h6>{user.email}</h6>
+                                                </List.Item>
 
-                                <List.Item>
-                                    <Button block={true} color="orange" size="lg" onClick={handleLogout}>
-                                        Logout
-                                    </Button>
-                                </List.Item>
+                                                <List.Item>
+                                                    <small>Contact</small>
+                                                    <h6>{user.phone}</h6>
+                                                </List.Item>
+                                            </List>
+                                        </Panel>
 
-                                <List.Item>
-                                    <Link to="/deactivate-account">
-                                        Deactivate Account
-                                    </Link>
-                                </List.Item>
+                                        <Divider>Account Information</Divider>
+                                        <Panel bordered={false}
+                                               className="py-5 p-sm-2 p-lg-5  shadow-sm"
+                                               style={{
+                                                   backgroundColor: "white", borderRadius: "24px"
+                                               }}>
 
-                                <List.Item>
-                                    <Link to="/delete-account">
-                                        Delete Account
-                                    </Link>
-                                </List.Item>
-                            </List>
-                        </Panel>
-                    </Col>
-                </Row>
-            </Container>
+
+                                            <Button block={true} size="sm" appearance="primary">
+                                                <Link to="/edit-profile" className="text-white">
+                                                    Edit Profile
+                                                </Link>
+                                            </Button>
+
+                                            <Divider/>
+
+                                            <Button block={true} size="sm" appearance="primary"
+                                                    href="/change-password">
+                                                <Link to="/change-password" className="text-white">
+                                                    Change Password
+                                                </Link>
+                                            </Button>
+
+                                            <Divider/>
+
+                                            <Button
+                                                appearance="primary"
+                                                block={true}
+                                                size="sm"
+                                                onClick={handleLogout}
+                                                className="text-white">Logout</Button>
+
+                                            <Divider/>
+                                            <Button color="red" block={true} size="sm">
+                                                <Link to="/delete-account" className="text-white">Delete Account</Link>
+                                            </Button>
+
+                                            <Divider/>
+
+                                            <Button color="orange" block={true} size="sm">
+                                                <Link to="/deactivate-account" className="text-white">De-activate
+                                                    Account</Link>
+                                            </Button>
+
+                                        </Panel>
+                                    </div>
+                                ) : (
+                                    <h3>Loading</h3>
+                                )
+                            }
+                        </Container>
+                    </div>
+                )
+            }
         </Layout>
     )
 }

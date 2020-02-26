@@ -8,7 +8,7 @@ function NavigationBar(props) {
     return (
         <Navbar expand="lg" variant="dark" bg="dark" collapseOnSelect={true}>
             <Container>
-                <Navbar.Brand href="/">Denty Dentist</Navbar.Brand>
+                <Navbar.Brand href="/">Denty Patient</Navbar.Brand>
 
                 <Navbar.Toggle/>
 
@@ -39,7 +39,7 @@ function NavigationBar(props) {
                         </Nav.Link>
 
                         <Nav.Link>
-                            <Link className="text-white" to="/new">
+                            <Link className="text-white" to="/new/appointment">
                                 Create
                             </Link>
                         </Nav.Link>

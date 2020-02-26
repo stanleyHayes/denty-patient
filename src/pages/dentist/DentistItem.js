@@ -4,9 +4,7 @@ import {Divider, Panel} from "rsuite";
 function DentistItem(props) {
 
     const styles = {
-        name: {
-
-        },
+        name: {},
         contact: {},
         secondary: {},
     };

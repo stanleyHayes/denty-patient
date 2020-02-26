@@ -15,6 +15,7 @@ import {
 import {useHistory} from "react-router-dom";
 
 import axios from "axios";
+import Layout from "../../components/layout/Layout";
 
 function EditProfilePage(props) {
 
@@ -90,43 +91,54 @@ function EditProfilePage(props) {
     }
 
     return (
-        <Container>
-            <Panel style={{backgroundColor: "whitesmoke", borderRadius: "24px"}} className="shadow-sm">
-                <Row style={style}>
-                    <Col smOffset={2} xs={20} sm={20} xsOffset={2} mdOffset={2} md={20} lgOffset={6} lg={12}>
-                        <h1 style={{textAlign: "center"}}>Bisa</h1>
-                        <h5 style={{textAlign: "center"}}>Edit Profile</h5>
-                    </Col>
-                    <Col smOffset={2} xs={20} sm={20} xsOffset={2} mdOffset={2} md={20} lgOffset={6} lg={12}>
-                        <Form fluid={true}>
+        <Layout>
+            {
+                (!userID) ? (
+                    history.push("/login")
+                ) : (
 
-                            <FormGroup>
-                                <ControlLabel htmlFor="name">Name</ControlLabel>
-                                <FormControl name="name" id="name" type="text" onChange={handleUserChange}
-                                             placeholder={existingUser.name} required/>
-                                <HelpBlock>This field is required</HelpBlock>
-                            </FormGroup>
+                    <Container>
+                        <Panel style={{backgroundColor: "whitesmoke", borderRadius: "24px"}} className="shadow-sm">
+                            <Row style={style}>
+                                <Col smOffset={2} xs={20} sm={20} xsOffset={2} mdOffset={2} md={20} lgOffset={6}
+                                     lg={12}>
+                                    <h1 style={{textAlign: "center"}}>Bisa</h1>
+                                    <h5 style={{textAlign: "center"}}>Edit Profile</h5>
+                                </Col>
+                                <Col smOffset={2} xs={20} sm={20} xsOffset={2} mdOffset={2} md={20} lgOffset={6}
+                                     lg={12}>
+                                    <Form fluid={true}>
 
-                            <FormGroup>
-                                <ControlLabel htmlFor="about">About</ControlLabel>
-                                <FormControl name="about" id="about" type="text" onChange={handleUserChange}
-                                             placeholder={(existingUser.about) ? (existingUser.about) : ("No about")}
-                                             required/>
-                            </FormGroup>
+                                        <FormGroup>
+                                            <ControlLabel htmlFor="name">Name</ControlLabel>
+                                            <FormControl name="name" id="name" type="text" onChange={handleUserChange}
+                                                         placeholder={existingUser.name} required/>
+                                            <HelpBlock>This field is required</HelpBlock>
+                                        </FormGroup>
 
-                            <FormGroup>
-                                <Button block={true} color="green" size="lg" onClick={handleSubmit}
-                                        onSubmit={handleSubmit}
-                                        loading={loading} disabled={loading}>
-                                    Update Profile
-                                </Button>
-                            </FormGroup>
+                                        <FormGroup>
+                                            <ControlLabel htmlFor="about">About</ControlLabel>
+                                            <FormControl name="about" id="about" type="text" onChange={handleUserChange}
+                                                         placeholder={(existingUser.about) ? (existingUser.about) : ("No about")}
+                                                         required/>
+                                        </FormGroup>
 
-                        </Form>
-                    </Col>
-                </Row>
-            </Panel>
-        </Container>
+                                        <FormGroup>
+                                            <Button block={true} color="green" size="lg" onClick={handleSubmit}
+                                                    onSubmit={handleSubmit}
+                                                    loading={loading} disabled={loading}>
+                                                Update Profile
+                                            </Button>
+                                        </FormGroup>
+
+                                    </Form>
+                                </Col>
+                            </Row>
+                        </Panel>
+                    </Container>
+                )
+            }
+        </Layout>
     )
 }
 

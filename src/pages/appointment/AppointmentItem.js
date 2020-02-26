@@ -4,7 +4,7 @@ import {Divider, Panel} from "rsuite";
 function AppointmentItem(props) {
 
     return (
-        <Panel shaded={true} bordered={true}>
+        <Panel className="shadow-sm" bordered={true} style={{backgroundColor: "white", borderRadius: "24px"}}>
             <small>Name</small>
             <p>{props.appointment.patient.name}</p>
             <Divider/>
